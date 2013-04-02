@@ -9,9 +9,9 @@ Gem::Specification.new do |s|
   s.version     = RailsPresenter::VERSION
   s.authors     = ["Diego Mónaco"]
   s.email       = ["dfmonaco@gmail.com"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of RailsPresenter."
-  s.description = "TODO: Description of RailsPresenter."
+  s.homepage    = "https://github.com/dfmonaco/rails_presenter"
+  s.summary     = "Presenters for Rails applications"
+  s.description = "Presenters for Rails applications"
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
 
