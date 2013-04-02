@@ -1,4 +1,9 @@
 Dummy::Application.routes.draw do
+  resources :projects do
+    resources :contracts
+    resource :user
+  end
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
