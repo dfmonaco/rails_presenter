@@ -25,19 +25,17 @@
       %tr
         %th N°
         %th Quantity
-        %th Unit
         %th Item
         %th Unit Price
         %th Discount
         %th Amount
 
     %tbody
-      - @order.items.includes(:unit).each_with_index do |item, index|
+      - @order.items.includes(:product).each_with_index do |item, index|
         %tr
           %td= index + 1
           %td= number_with_precision(item.quantity)
-          %td= item.unit.name
-          %td= item.description
+          %td= item.product.name
           %td= number_to_currency(item.unit_price)
           %td= number_to_percentage(item.discount)
           %td= number_to_currency(item.amount)
@@ -63,7 +61,6 @@
       %tr
         %th N°
         %th Quantity
-        %th Unit
         %th Item
         %th Unit Price
         %th Discount
@@ -74,8 +71,7 @@
         %tr
           %td= index + 1
           %td= item_presenter.quantity
-          %td= item_presenter.unit
-          %td= item_presenter.description
+          %td= item_presenter.product
           %td= item_presenter.unit_price
           %td= item_presenter.discount
           %td= item_presenter.amount
@@ -85,3 +81,52 @@
         %td= order_presenter.vat
         %td= order_presenter.total
 ```
+
+## How did we get here?
+
+```ruby
+# app/presenters/order_presenter.rb
+
+class OrderPresenter < Presenter
+  present :customer
+
+  present :items do
+    includes(:product)
+  end
+
+  format :subtotal, :vat, :total, with: :number_to_currency
+
+  def date
+    h.l super, format: :long
+  end
+
+end
+```
+
+```ruby
+# app/presenters/item_presenter.rb
+
+class ItemPresenter < Presenter
+  present :product
+
+  format :quantity, with: :number_with_precision
+  format :unit_price, :amount, with: :number_to_currency
+  format :discount, with: :number_to_percentage
+end
+```
+
+```ruby
+# app/presenters/product_presenter.rb
+
+class ProductPresenter < Presenter
+end
+```
+
+```ruby
+# app/presenters/customer_presenter.rb
+
+class CustomerPresenter < Presenter
+end
+```
+
+
