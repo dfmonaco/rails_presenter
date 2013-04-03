@@ -12,13 +12,13 @@
 %div
   %p
     %strong Date:
-    %span= l(@order.date, format: :long)
+    %span= l(@purchase_order.date, format: :long)
   %p
     %strong Number:
-    %span= @order.number
+    %span= @purchase_order.number
   %p
     %strong Customer:
-    %span= @order.customer.name
+    %span= @purchase_order.customer.name
 
   %table
     %thead
@@ -31,7 +31,7 @@
         %th Amount
 
     %tbody
-      - @order.items.includes(:product).each_with_index do |item, index|
+      - @purchase_order.items.includes(:product).each_with_index do |item, index|
         %tr
           %td= index + 1
           %td= number_with_precision(item.quantity)
@@ -41,9 +41,9 @@
           %td= number_to_currency(item.amount)
 
       %tr
-        %td= number_to_currency(@order.subtotal)
-        %td= number_to_currency(@order.vat)
-        %td= number_to_currency(@order.total)
+        %td= number_to_currency(@purchase_order.subtotal)
+        %td= number_to_currency(@purchase_order.vat)
+        %td= number_to_currency(@purchase_order.total)
 ```
 
 ##After:
@@ -53,7 +53,7 @@
 
 %h1 Purchase Order
 
-- present(@order) do |order_presenter|
+- present(@purchase_order) do |order_presenter|
   = order_presenter.with_attrs :date, :number, :customer
 
   %table
@@ -85,9 +85,9 @@
 ## How did we get here?
 
 ```ruby
-# app/presenters/order_presenter.rb
+# app/presenters/purchase_order_presenter.rb
 
-class OrderPresenter < Presenter
+class PurchaseOrderPresenter < Presenter
   present :customer
 
   present :items do
