@@ -8,17 +8,25 @@
 # app/views/purchase_orders/show.html.haml
 
 %h1 Purchase Order
-
 %div
   %p
     %strong Date:
-    %span= l(@purchase_order.date, format: :long)
+    %span= localize(@purchase_order.date, format: :long)
   %p
     %strong Number:
     %span= @purchase_order.number
+
+%h2 Customer
+%div
   %p
-    %strong Customer:
+    %strong Name:
     %span= @purchase_order.customer.name
+  %p
+    %strong Phone:
+    %span= @purchase_order.customer.phone || '------'
+  %p
+    %strong Email:
+    %span= mail_to(@purchase_order.customer.email)
 
   %table
     %thead
@@ -51,10 +59,13 @@
 ```haml
 # app/views/purchase_orders/show.html.haml
 
-%h1 Purchase Order
-
 - present(@purchase_order) do |order_presenter|
-  = order_presenter.with_attrs :date, :number, :customer
+
+  %h1 Purchase Order
+  = order_presenter.with_attrs :date, :number
+
+  %h2 Customer
+  = order_presenter.customer.with_attrs :name, :phone, :email
 
   %table
     %thead
@@ -97,7 +108,7 @@ class PurchaseOrderPresenter < Presenter
   format :subtotal, :vat, :total, with: :number_to_currency
 
   def date
-    h.l super, format: :long
+    h.localize(super, format: :long)
   end
 
 end
@@ -126,6 +137,9 @@ end
 # app/presenters/customer_presenter.rb
 
 class CustomerPresenter < Presenter
+  def email
+    h.mail_to super
+  end
 end
 ```
 
