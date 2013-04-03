@@ -102,7 +102,7 @@
 ```ruby
 # app/presenters/purchase_order_presenter.rb
 
-class PurchaseOrderPresenter < Presenter
+class PurchaseOrderPresenter < RailsPresenter::Base
   present :customer
 
   present :items do
@@ -120,7 +120,7 @@ end
 ```ruby
 # app/presenters/customer_presenter.rb
 
-class CustomerPresenter < Presenter
+class CustomerPresenter < RailsPresenter::Base
   def email
     h.mail_to super
   end
@@ -130,7 +130,7 @@ end
 ```ruby
 # app/presenters/item_presenter.rb
 
-class ItemPresenter < Presenter
+class ItemPresenter < RailsPresenter::Base
   present :product
 
   format :quantity, with: :number_with_precision
@@ -142,7 +142,7 @@ end
 ```ruby
 # app/presenters/product_presenter.rb
 
-class ProductPresenter < Presenter
+class ProductPresenter < RailsPresenter::Base
 end
 ```
 
