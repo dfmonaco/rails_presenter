@@ -95,7 +95,7 @@ end
 describe Presenter do
   context 'presented object is an active record' do
 
-    let(:child_class) do
+    let!(:child_class) do
       class DummyRecordPresenter < Presenter
         self
       end
