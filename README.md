@@ -1,6 +1,8 @@
 # Rails Presenter
 
-[![Build Status](https://travis-ci.org/dfmonaco/rails_presenter.png?branch=master)](https://travis-ci.org/dfmonaco/rails_presenter)
+### Code Status
+* [![Build Status](https://travis-ci.org/dfmonaco/rails_presenter.png?branch=master)](https://travis-ci.org/dfmonaco/rails_presenter)
+* [![Coverage Status](https://coveralls.io/repos/dfmonaco/rails_presenter/badge.png?branch=master)](https://coveralls.io/r/dfmonaco/rails_presenter)
 
 ##Before:
 
