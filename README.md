@@ -110,7 +110,16 @@ class PurchaseOrderPresenter < Presenter
   def date
     h.localize(super, format: :long)
   end
+end
+```
 
+```ruby
+# app/presenters/customer_presenter.rb
+
+class CustomerPresenter < Presenter
+  def email
+    h.mail_to super
+  end
 end
 ```
 
@@ -130,16 +139,6 @@ end
 # app/presenters/product_presenter.rb
 
 class ProductPresenter < Presenter
-end
-```
-
-```ruby
-# app/presenters/customer_presenter.rb
-
-class CustomerPresenter < Presenter
-  def email
-    h.mail_to super
-  end
 end
 ```
 
