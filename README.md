@@ -48,10 +48,17 @@
           %td= number_to_percentage(item.discount)
           %td= number_to_currency(item.amount)
 
-      %tr
-        %td= number_to_currency(@purchase_order.subtotal)
-        %td= number_to_currency(@purchase_order.vat)
-        %td= number_to_currency(@purchase_order.total)
+%div
+  %p
+    %strong Subtotal:
+    %span= number_to_currency(@purchase_order.subtotal)
+  %p
+    %strong Vat:
+    %span= number_to_currency(@purchase_order.vat)
+  %p
+    %strong Total:
+    %span= number_to_currency(@purchase_order.total)
+
 ```
 
 ##After:
@@ -87,10 +94,7 @@
           %td= item_presenter.discount
           %td= item_presenter.amount
 
-      %tr
-        %td= order_presenter.subtotal
-        %td= order_presenter.vat
-        %td= order_presenter.total
+  = order_presenter.with_attrs :subtotal, :vat, :total
 ```
 
 ## How did we get here?
