@@ -5,14 +5,14 @@ class Project < ActiveRecord::Base
   end
   def self.columns
     [create_column('name'),
-      create_column('lot'),
+      create_column('project_manager'),
       create_column('id'),
       create_column('created_at'),
       create_column('updated_at'),
       create_column('something_id')]
   end
   attr_accessor :company
-  attr_accessible :id, :name, :lot, :company
+  attr_accessible :id, :name, :project_manager, :company
 
   def persisted?
     true
@@ -247,19 +247,19 @@ describe Presenter do
     class ProjectPresenter < Presenter; end
     let(:presenter) { ProjectPresenter.new(project, view) }
     let(:company) { Company.new(name: 'acme') }
-    let(:project) { Project.new(id:58, name: 'foo', lot: 'bar', company: company) }
+    let(:project) { Project.new(id:58, name: 'foo', project_manager: 'bar', company: company) }
 
     describe '#with_attrs' do
-      let(:html) { Capybara.string presenter.with_attrs(:name, :lot, [:company, ->(p) { p.company.name }]) }
+      let(:html) { Capybara.string presenter.with_attrs(:name, :project_manager, [:company, ->(p) { p.company.name }]) }
 
       it 'creates a div#show-with-attrs' do
         html.should have_selector('div.show-with-attrs')
       end
 
       it 'renders each translated attribute name within a <p> inside a <strong>' do
-        html.find('p:first strong').text.should == 'name'
-        html.find('p:nth-of-type(2) strong').text.should == 'lot'
-        html.find('p:last strong').text.should == 'company'
+        html.find('p:first strong').text.should == 'Name: '
+        html.find('p:nth-of-type(2) strong').text.should == 'Project Manager: '
+        html.find('p:last strong').text.should == 'Company: '
       end
 
       it 'renders each attribute value within a <p>' do

@@ -1,7 +1,7 @@
 <div class="show-with-attrs">
   <% attrs_hash.each do |name, value| %>
     <p>
-      <strong><%= name %></strong>
+      <strong><%= "#{name.to_s.titleize}: " %></strong>
       <span><%= value %></span>
     </p>
   <% end %>
