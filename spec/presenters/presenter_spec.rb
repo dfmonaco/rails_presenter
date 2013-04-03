@@ -92,11 +92,11 @@ class DummyRecord < ActiveRecord::Base
   validates :baz, numericality: true, allow_blank: true
 end
 
-describe Presenter do
+describe RailsPresenter::Base do
   context 'presented object is an active record' do
 
     let!(:child_class) do
-      class DummyRecordPresenter < Presenter
+      class DummyRecordPresenter < RailsPresenter::Base
         self
       end
     end
@@ -115,7 +115,7 @@ describe Presenter do
       class ActiveFoo
       end
 
-      class ActiveFooPresenter < Presenter
+      class ActiveFooPresenter < RailsPresenter::Base
         self
       end
 
@@ -125,13 +125,13 @@ describe Presenter do
 
   describe '.present' do
     class Bar; end
-    class BarPresenter < Presenter; end
+    class BarPresenter < RailsPresenter::Base; end
 
     class Qux; end
-    class QuxPresenter < Presenter; end
+    class QuxPresenter < RailsPresenter::Base; end
 
     class Baz; end
-    class BazPresenter < Presenter; end
+    class BazPresenter < RailsPresenter::Base; end
 
     class Foo
       def bar
@@ -162,7 +162,7 @@ describe Presenter do
     let(:foo) { Foo.new }
     let(:foo_presenter) { FooPresenter.new(foo, view) }
 
-    class FooPresenter < Presenter
+    class FooPresenter < RailsPresenter::Base
       present :bar, :qux
       present :baz
       present :collection
@@ -185,7 +185,7 @@ describe Presenter do
   end
 
   describe '.location' do
-    class ContractPresenter < Presenter
+    class ContractPresenter < RailsPresenter::Base
       location :@project, :@contract
     end
 
@@ -195,7 +195,7 @@ describe Presenter do
 
     specify { contract_presenter.self_location.should eq('/projects/2/contracts/5') }
 
-    class UserPresenter < Presenter
+    class UserPresenter < RailsPresenter::Base
       location :@project, :user
     end
 
@@ -225,7 +225,7 @@ describe Presenter do
       end
     end
 
-    class FooPresenter < Presenter
+    class FooPresenter < RailsPresenter::Base
       format :quantity, :other_quantity, with: :number_with_precision
       format :amount, with: :number_to_currency
       format :vat_amount, with: :number_to_currency
@@ -244,7 +244,7 @@ describe Presenter do
 
 
   describe 'general presenters methods' do
-    class ProjectPresenter < Presenter; end
+    class ProjectPresenter < RailsPresenter::Base; end
     let(:presenter) { ProjectPresenter.new(project, view) }
     let(:company) { Company.new(name: 'acme') }
     let(:project) { Project.new(id:58, name: 'foo', project_manager: 'bar', company: company) }
@@ -310,7 +310,7 @@ describe Presenter do
       context 'getting the base object for a descendant' do
         class A; end
         class B < A; end
-        class BPresenter < Presenter; end
+        class BPresenter < RailsPresenter::Base; end
         let(:b) { B.new }
         let(:b_presenter) { BPresenter.new(b, view) }
 

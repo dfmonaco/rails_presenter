@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PresenterHelper do
+describe RailsPresenter::PresenterHelper do
   describe '#present' do
     context 'used from a view' do
       it 'instantiates a new presenter object' do
@@ -31,7 +31,7 @@ describe PresenterHelper do
         end
       end
 
-      class FooPresenter < Presenter
+      class FooPresenter < RailsPresenter::Base
         def to_s
           h.number_to_currency(super)
         end
@@ -44,7 +44,7 @@ describe PresenterHelper do
       end
 
 
-      class BarPresenter < Presenter
+      class BarPresenter < RailsPresenter::Base
         def foo
           present(super).to_s
         end
@@ -58,7 +58,7 @@ describe PresenterHelper do
 
   context 'used for a collection' do
     class Foo; end
-    class FooPresenter < Presenter; end
+    class FooPresenter < RailsPresenter::Base; end
 
     let(:collection) { [Foo.new, Foo.new, Foo.new] }
     let(:presented_collection) { helper.present(collection) }
