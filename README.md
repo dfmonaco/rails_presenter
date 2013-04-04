@@ -148,4 +148,39 @@ class ProductPresenter < RailsPresenter::Base
 end
 ```
 
+## How does it work?
+Basically there are two main components the presenter class and the #present helper method.
+
+### The presenter class
+You can think of a presenter as a mix between a domain model object and a view template, every method call not defined in the current class will be forwarded to the original domain model object, besides you can access all the view template functionality through the #h method. Also the #target method will get you the unmodified original domain model object.
+
+```ruby
+class ProductPresenter < RailsPresenter::Base
+
+  def image
+    h.link_to(h.image_tag(super), h.product_path(target))
+  end
+
+end
+```
+
+### The #present helper method
+The helper method #present it's used to instantiate new presenter objects, it takes any object, an array of objects or an ActiveRecord::Relation and returns the corresponding presenter instances.
+
+```ruby
+present(Customer.new).map(&:class) # => CustomerPresenter
+present([Customer.new, Product.new]).map(&:class) # => [CustomerPresenter, ProductPresenter]
+present(Product.limit(2).order(:name))).map(&:class) # => [ProductPresenter, ProductPresenter]
+```
+This method determines the name of the presenter class from the target object, for example a Project object would instantiate a ProjectPresenter object. If the asumed presenter class doesn't exists it will return the unmodified target object.
+
+You can pass an optional block too:
+
+```ruby
+present(@purchase_order) do |purhase_order_presenter|
+  purchase_order_presenter.date
+  purchase_order_presenter.number
+end
+```
+
 
