@@ -1,8 +1,10 @@
-# Rails Presenter
+# RailsPresenter
 
-### Code Status
-* [![Build Status](https://travis-ci.org/dfmonaco/rails_presenter.png?branch=master)](https://travis-ci.org/dfmonaco/rails_presenter)
-* [![Coverage Status](https://coveralls.io/repos/dfmonaco/rails_presenter/badge.png?branch=master)](https://coveralls.io/r/dfmonaco/rails_presenter)
+[![Gem Version](https://badge.fury.io/rb/rails_presenter.png)](http://badge.fury.io/rb/rails_presenter)
+[![Build Status](https://travis-ci.org/dfmonaco/rails_presenter.png?branch=master)](https://travis-ci.org/dfmonaco/rails_presenter)
+[![Coverage Status](https://coveralls.io/repos/dfmonaco/rails_presenter/badge.png?branch=master)](https://coveralls.io/r/dfmonaco/rails_presenter)
+
+RailsPresenter will help you to clean up your views and avoid helpers hell.
 
 ##Before:
 
