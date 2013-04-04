@@ -122,9 +122,11 @@ module RailsPresenter
       @template
     end
 
-    def o
+    def target
       __getobj__
     end
+
+    alias_method :o, :target
 
     def to_s
       respond_to?(:name) ? name : super
@@ -143,7 +145,7 @@ module RailsPresenter
       h.render partial: 'shared/show_with_attrs', locals: {attrs_hash: attrs_hash}
     end
 
-    def self_location(location = o)
+    def self_location(location = target)
       h.polymorphic_path location
     end
 
@@ -162,8 +164,8 @@ module RailsPresenter
       when /^h_(.*)$/
         get_iv_from_view($1)
       when /^get_(.*)$/
-        return o if o.is_a? $1.camelize.constantize
-        get_iv_from_view($1) || o.public_send($1)
+        return target if target.is_a? $1.camelize.constantize
+        get_iv_from_view($1) || target.public_send($1)
       else
         super
       end
@@ -171,7 +173,7 @@ module RailsPresenter
 
     private
     def base_object_name
-      o.class.to_s.underscore
+      target.class.to_s.underscore
     end
 
     def get_iv_from_view(iv_name)
