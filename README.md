@@ -232,7 +232,7 @@ purchase_order.description # => nil
 present(purchase_order).description # => '----'
 ```
 
-### Show your object attributes in a consistent an DRY way
+### Show your object attributes in a consistent and DRY way
 
 Use the default partial to show your object's attributes or write your own.
 
