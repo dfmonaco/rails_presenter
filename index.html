@@ -1,0 +1,364 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Rails presenter by dfmonaco</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>Rails presenter</h1>
+        <p>Presenters for Rails applications</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/dfmonaco/rails_presenter" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/dfmonaco/rails_presenter/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/dfmonaco/rails_presenter/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h1>
+<a name="railspresenter" class="anchor" href="#railspresenter"><span class="octicon octicon-link"></span></a>RailsPresenter</h1>
+
+<p><a href="http://badge.fury.io/rb/rails_presenter"><img src="https://badge.fury.io/rb/rails_presenter.png" alt="Gem Version"></a>
+<a href="https://travis-ci.org/dfmonaco/rails_presenter"><img src="https://travis-ci.org/dfmonaco/rails_presenter.png?branch=master" alt="Build Status"></a>
+<a href="https://coveralls.io/r/dfmonaco/rails_presenter"><img src="https://coveralls.io/repos/dfmonaco/rails_presenter/badge.png?branch=master" alt="Coverage Status"></a></p>
+
+<p>RailsPresenter will help you to clean up your views and avoid helpers hell.</p>
+
+<h2>
+<a name="before" class="anchor" href="#before"><span class="octicon octicon-link"></span></a>Before:</h2>
+
+<div class="highlight"><pre># app/views/purchase_orders/show.html.haml
+
+<span class="nt">%h1</span> Purchase Order
+<span class="nt">%div</span>
+  <span class="nt">%p</span>
+    <span class="nt">%strong</span> Date:
+    <span class="nt">%span</span><span class="p">=</span> <span class="n">localize</span><span class="p">(</span><span class="vi">@purchase_order</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="nb">format</span><span class="p">:</span> <span class="ss">:long</span><span class="p">)</span>
+  <span class="nt">%p</span>
+    <span class="nt">%strong</span> Number:
+    <span class="nt">%span</span><span class="p">=</span> <span class="vi">@purchase_order</span><span class="o">.</span><span class="n">number</span>
+
+<span class="nt">%h2</span> Customer
+<span class="nt">%div</span>
+  <span class="nt">%p</span>
+    <span class="nt">%strong</span> Name:
+    <span class="nt">%span</span><span class="p">=</span> <span class="vi">@purchase_order</span><span class="o">.</span><span class="n">customer</span><span class="o">.</span><span class="n">name</span>
+  <span class="nt">%p</span>
+    <span class="nt">%strong</span> Phone:
+    <span class="nt">%span</span><span class="p">=</span> <span class="vi">@purchase_order</span><span class="o">.</span><span class="n">customer</span><span class="o">.</span><span class="n">phone</span> <span class="o">||</span> <span class="s1">'------'</span>
+  <span class="nt">%p</span>
+    <span class="nt">%strong</span> Email:
+    <span class="nt">%span</span><span class="p">=</span> <span class="n">mail_to</span><span class="p">(</span><span class="vi">@purchase_order</span><span class="o">.</span><span class="n">customer</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+
+  <span class="nt">%table</span>
+    <span class="nt">%thead</span>
+      <span class="nt">%tr</span>
+        <span class="nt">%th</span> N°
+        <span class="nt">%th</span> Quantity
+        <span class="nt">%th</span> Item
+        <span class="nt">%th</span> Unit Price
+        <span class="nt">%th</span> Discount
+        <span class="nt">%th</span> Amount
+
+    <span class="nt">%tbody</span>
+      <span class="p">-</span> <span class="vi">@purchase_order</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="ss">:product</span><span class="p">)</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">item</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
+        <span class="nt">%tr</span>
+          <span class="nt">%td</span><span class="p">=</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span>
+          <span class="nt">%td</span><span class="p">=</span> <span class="n">number_with_precision</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">quantity</span><span class="p">)</span>
+          <span class="nt">%td</span><span class="p">=</span> <span class="n">item</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">name</span>
+          <span class="nt">%td</span><span class="p">=</span> <span class="n">number_to_currency</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">unit_price</span><span class="p">)</span>
+          <span class="nt">%td</span><span class="p">=</span> <span class="n">number_to_percentage</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">discount</span><span class="p">)</span>
+          <span class="nt">%td</span><span class="p">=</span> <span class="n">number_to_currency</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+
+<span class="nt">%div</span>
+  <span class="nt">%p</span>
+    <span class="nt">%strong</span> Subtotal:
+    <span class="nt">%span</span><span class="p">=</span> <span class="n">number_to_currency</span><span class="p">(</span><span class="vi">@purchase_order</span><span class="o">.</span><span class="n">subtotal</span><span class="p">)</span>
+  <span class="nt">%p</span>
+    <span class="nt">%strong</span> Vat:
+    <span class="nt">%span</span><span class="p">=</span> <span class="n">number_to_currency</span><span class="p">(</span><span class="vi">@purchase_order</span><span class="o">.</span><span class="n">vat</span><span class="p">)</span>
+  <span class="nt">%p</span>
+    <span class="nt">%strong</span> Total:
+    <span class="nt">%span</span><span class="p">=</span> <span class="n">number_to_currency</span><span class="p">(</span><span class="vi">@purchase_order</span><span class="o">.</span><span class="n">total</span><span class="p">)</span>
+
+</pre></div>
+
+<h2>
+<a name="after" class="anchor" href="#after"><span class="octicon octicon-link"></span></a>After:</h2>
+
+<div class="highlight"><pre># app/views/purchase_orders/show.html.haml
+
+<span class="p">-</span> <span class="n">present</span><span class="p">(</span><span class="vi">@purchase_order</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">order_presenter</span><span class="o">|</span>
+
+  <span class="nt">%h1</span> Purchase Order
+  <span class="p">=</span> <span class="n">order_presenter</span><span class="o">.</span><span class="n">with_attrs</span> <span class="ss">:date</span><span class="p">,</span> <span class="ss">:number</span>
+
+  <span class="nt">%h2</span> Customer
+  <span class="p">=</span> <span class="n">order_presenter</span><span class="o">.</span><span class="n">customer</span><span class="o">.</span><span class="n">with_attrs</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:phone</span><span class="p">,</span> <span class="ss">:email</span>
+
+  <span class="nt">%table</span>
+    <span class="nt">%thead</span>
+      <span class="nt">%tr</span>
+        <span class="nt">%th</span> N°
+        <span class="nt">%th</span> Quantity
+        <span class="nt">%th</span> Item
+        <span class="nt">%th</span> Unit Price
+        <span class="nt">%th</span> Discount
+        <span class="nt">%th</span> Amount
+
+    <span class="nt">%tbody</span>
+      <span class="p">-</span> <span class="n">order_presenter</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">item_presenter</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
+        <span class="nt">%tr</span>
+          <span class="nt">%td</span><span class="p">=</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span>
+          <span class="nt">%td</span><span class="p">=</span> <span class="n">item_presenter</span><span class="o">.</span><span class="n">quantity</span>
+          <span class="nt">%td</span><span class="p">=</span> <span class="n">item_presenter</span><span class="o">.</span><span class="n">product</span>
+          <span class="nt">%td</span><span class="p">=</span> <span class="n">item_presenter</span><span class="o">.</span><span class="n">unit_price</span>
+          <span class="nt">%td</span><span class="p">=</span> <span class="n">item_presenter</span><span class="o">.</span><span class="n">discount</span>
+          <span class="nt">%td</span><span class="p">=</span> <span class="n">item_presenter</span><span class="o">.</span><span class="n">amount</span>
+
+  <span class="p">=</span> <span class="n">order_presenter</span><span class="o">.</span><span class="n">with_attrs</span> <span class="ss">:subtotal</span><span class="p">,</span> <span class="ss">:vat</span><span class="p">,</span> <span class="ss">:total</span>
+</pre></div>
+
+<h2>
+<a name="how-did-we-get-here" class="anchor" href="#how-did-we-get-here"><span class="octicon octicon-link"></span></a>How did we get here?</h2>
+
+<div class="highlight"><pre><span class="c1"># app/presenters/purchase_order_presenter.rb</span>
+
+<span class="k">class</span> <span class="nc">PurchaseOrderPresenter</span> <span class="o">&lt;</span> <span class="ss">RailsPresenter</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="n">present</span> <span class="ss">:customer</span>
+
+  <span class="n">present</span> <span class="ss">:items</span> <span class="k">do</span>
+    <span class="n">includes</span><span class="p">(</span><span class="ss">:product</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="nb">format</span> <span class="ss">:subtotal</span><span class="p">,</span> <span class="ss">:vat</span><span class="p">,</span> <span class="ss">:total</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="ss">:number_to_currency</span>
+
+  <span class="k">def</span> <span class="nf">date</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="k">super</span><span class="p">,</span> <span class="nb">format</span><span class="p">:</span> <span class="ss">:long</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="c1"># app/presenters/customer_presenter.rb</span>
+
+<span class="k">class</span> <span class="nc">CustomerPresenter</span> <span class="o">&lt;</span> <span class="ss">RailsPresenter</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="k">def</span> <span class="nf">email</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">mail_to</span> <span class="k">super</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="c1"># app/presenters/item_presenter.rb</span>
+
+<span class="k">class</span> <span class="nc">ItemPresenter</span> <span class="o">&lt;</span> <span class="ss">RailsPresenter</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="n">present</span> <span class="ss">:product</span>
+
+  <span class="nb">format</span> <span class="ss">:quantity</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="ss">:number_with_precision</span>
+  <span class="nb">format</span> <span class="ss">:unit_price</span><span class="p">,</span> <span class="ss">:amount</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="ss">:number_to_currency</span>
+  <span class="nb">format</span> <span class="ss">:discount</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="ss">:number_to_percentage</span>
+<span class="k">end</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="c1"># app/presenters/product_presenter.rb</span>
+
+<span class="k">class</span> <span class="nc">ProductPresenter</span> <span class="o">&lt;</span> <span class="ss">RailsPresenter</span><span class="p">:</span><span class="ss">:Base</span>
+<span class="k">end</span>
+</pre></div>
+
+<h2>
+<a name="how-does-it-work" class="anchor" href="#how-does-it-work"><span class="octicon octicon-link"></span></a>How does it work?</h2>
+
+<p>Basically there are two main components, the <code>presenter object</code> and the <code>#present</code> helper method.</p>
+
+<h3>
+<a name="the-presenter-object" class="anchor" href="#the-presenter-object"><span class="octicon octicon-link"></span></a>The presenter object</h3>
+
+<p>You can think of a presenter as a mix between a domain model object and a view template, every method call not defined in the current class will be forwarded to the original domain model object, besides you can access all the view template functionality through the <code>#h</code> method. Also the <code>#target</code> method will get you the unmodified original domain model object.</p>
+
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">ProductPresenter</span> <span class="o">&lt;</span> <span class="ss">RailsPresenter</span><span class="p">:</span><span class="ss">:Base</span>
+
+  <span class="k">def</span> <span class="nf">image</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">link_to</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">image_tag</span><span class="p">(</span><span class="k">super</span><span class="p">),</span> <span class="n">h</span><span class="o">.</span><span class="n">product_path</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+  <span class="k">end</span>
+
+<span class="k">end</span>
+</pre></div>
+
+<h3>
+<a name="the-present-helper-method" class="anchor" href="#the-present-helper-method"><span class="octicon octicon-link"></span></a>The #present helper method</h3>
+
+<p>The helper method <code>#present</code> it's used to instantiate new presenter objects, it takes any object, an array of objects or an ActiveRecord::Relation and returns the corresponding presenter instances.</p>
+
+<div class="highlight"><pre><span class="n">present</span><span class="p">(</span><span class="no">Customer</span><span class="o">.</span><span class="n">new</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:class</span><span class="p">)</span> <span class="c1"># =&gt; CustomerPresenter</span>
+<span class="n">present</span><span class="p">(</span><span class="o">[</span><span class="no">Customer</span><span class="o">.</span><span class="n">new</span><span class="p">,</span> <span class="no">Product</span><span class="o">.</span><span class="n">new</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:class</span><span class="p">)</span> <span class="c1"># =&gt; [CustomerPresenter, ProductPresenter]</span>
+<span class="n">present</span><span class="p">(</span><span class="no">Product</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="ss">:name</span><span class="p">)))</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:class</span><span class="p">)</span> <span class="c1"># =&gt; [ProductPresenter, ProductPresenter]</span>
+</pre></div>
+
+<p>This method determines the name of the presenter class from the target object, for example a Project object would instantiate a ProjectPresenter object. If the assumed presenter class doesn't exist it will return the unmodified target object.</p>
+
+<p>You can pass an optional block too:</p>
+
+<div class="highlight"><pre><span class="n">present</span><span class="p">(</span><span class="vi">@purchase_order</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">purchase_order_presenter</span><span class="o">|</span>
+  <span class="n">purchase_order_presenter</span><span class="o">.</span><span class="n">date</span>
+  <span class="n">purchase_order_presenter</span><span class="o">.</span><span class="n">number</span>
+<span class="k">end</span>
+</pre></div>
+
+<h2>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<h3>
+<a name="present-associations" class="anchor" href="#present-associations"><span class="octicon octicon-link"></span></a>Present associations</h3>
+
+<p>Define the associated objects that you want to get automatically presented.</p>
+
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">Post</span>
+  <span class="n">has_many</span> <span class="ss">:comments</span>
+  <span class="n">belongs_to</span> <span class="ss">:user</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">PostPresenter</span> <span class="o">&lt;</span> <span class="ss">RailsPresenter</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="n">present</span> <span class="ss">:comments</span><span class="p">,</span> <span class="ss">:user</span>
+<span class="k">end</span>
+
+<span class="n">post_presenter</span> <span class="o">=</span> <span class="n">present</span><span class="p">(</span><span class="no">Post</span><span class="o">.</span><span class="n">last</span><span class="p">)</span>
+
+<span class="n">post_presenter</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">class</span> <span class="c1"># =&gt; CommentPresenter</span>
+<span class="n">post_presenter</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">class</span> <span class="c1"># =&gt; UserPresenter</span>
+</pre></div>
+
+<h3>
+<a name="format-attributes-with-rails-helpers" class="anchor" href="#format-attributes-with-rails-helpers"><span class="octicon octicon-link"></span></a>Format attributes with rails helpers</h3>
+
+<p>Configure in your presenter class how you want your attributes to be formatted for display.</p>
+
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">InvoicePresenter</span> <span class="o">&lt;</span> <span class="ss">RailsPresenter</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="nb">format</span> <span class="ss">:net_amount</span><span class="p">,</span> <span class="ss">:total_amount</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="ss">:number_to_currency</span>
+  <span class="nb">format</span> <span class="ss">:vat_percentage</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="ss">:number_to_percentage</span>
+<span class="k">end</span>
+
+<span class="n">invoice_presenter</span> <span class="o">=</span> <span class="n">present</span><span class="p">(</span><span class="no">Invoice</span><span class="o">.</span><span class="n">last</span><span class="p">)</span>
+
+<span class="n">invoice_presenter</span><span class="o">.</span><span class="n">net_amount</span> <span class="c1"># =&gt; $234,56</span>
+<span class="n">invoice_presenter</span><span class="o">.</span><span class="n">vat_percentage</span> <span class="c1"># =&gt; 10,5%</span>
+</pre></div>
+
+<h3>
+<a name="nil-formatter" class="anchor" href="#nil-formatter"><span class="octicon octicon-link"></span></a>Nil Formatter</h3>
+
+<p>RailsPresenter will format any attribute with a nil value with a more descriptive string. (In future versions this string will be configurable)</p>
+
+<div class="highlight"><pre><span class="n">purchase_order</span><span class="o">.</span><span class="n">description</span> <span class="c1"># =&gt; nil</span>
+
+<span class="n">present</span><span class="p">(</span><span class="n">purchase_order</span><span class="p">)</span><span class="o">.</span><span class="n">description</span> <span class="c1"># =&gt; '----'</span>
+</pre></div>
+
+<h3>
+<a name="show-your-object-attributes-in-a-consistent-an-dry-way" class="anchor" href="#show-your-object-attributes-in-a-consistent-an-dry-way"><span class="octicon octicon-link"></span></a>Show your object attributes in a consistent an DRY way</h3>
+
+<p>Use the default partial to show your object's attributes or write your own.</p>
+
+<div class="highlight"><pre><span class="n">user_presenter</span><span class="o">.</span><span class="n">with_attrs</span> <span class="ss">:first_name</span><span class="p">,</span> <span class="ss">:last_name</span><span class="p">,</span> <span class="ss">:email</span>
+</pre></div>
+
+<p>This helper will render the following partial passing it a hash named <code>attrs_hash</code> that represents the names and values for the given attributes.</p>
+
+<div class="highlight"><pre><span class="x"># shared/_show_with_attrs.html.erb</span>
+
+<span class="x">&lt;div class="show-with-attrs"&gt;</span>
+<span class="x">  </span><span class="cp">&lt;%</span> <span class="n">attrs_hash</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="nb">name</span><span class="p">,</span> <span class="n">value</span><span class="o">|</span> <span class="cp">%&gt;</span><span class="x"></span>
+<span class="x">    &lt;p&gt;</span>
+<span class="x">      &lt;strong&gt;</span><span class="cp">&lt;%=</span> <span class="s2">"</span><span class="si">#{</span><span class="nb">name</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">titleize</span><span class="si">}</span><span class="s2">: "</span> <span class="cp">%&gt;</span><span class="x">&lt;/strong&gt;</span>
+<span class="x">      &lt;span&gt;</span><span class="cp">&lt;%=</span> <span class="n">value</span> <span class="cp">%&gt;</span><span class="x">&lt;/span&gt;</span>
+<span class="x">    &lt;/p&gt;</span>
+<span class="x">  </span><span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span><span class="x"></span>
+<span class="x">&lt;/div&gt;</span>
+</pre></div>
+
+<p>If you define your own partial with the same name inside the views/shared directory it will override the provided default.</p>
+
+<h3>
+<a name="teach-your-objects-how-to-represent-themselves" class="anchor" href="#teach-your-objects-how-to-represent-themselves"><span class="octicon octicon-link"></span></a>Teach your objects how to represent themselves</h3>
+
+<p>To take advantage of Rails calling <code>#to_s</code> before rendering an object inside a view template, RailsPresenter redefines this method to call a <code>#name</code> method if it is defined. (In future versions this will be configurable and you will be able to define an array of methods to try before using default <code>#to_s</code> behavior)
+So if you have the right method defined, you can just drop your object in a view template and without calling any method it will represent itself.</p>
+
+<div class="highlight"><pre># contacts/show.html.haml
+
+<span class="p">=</span> <span class="vi">@contact</span> <span class="c1"># =&gt; "#&lt;Contact:0xc1ad978&gt;"</span>
+
+<span class="p">=</span> <span class="vi">@contact</span><span class="o">.</span><span class="n">name</span> <span class="c1"># =&gt; 'John Doe'</span>
+
+<span class="p">=</span> <span class="n">present</span><span class="p">(</span><span class="vi">@contact</span><span class="p">)</span> <span class="c1"># =&gt; 'John Doe'</span>
+</pre></div>
+
+<h3>
+<a name="automagic-links" class="anchor" href="#automagic-links"><span class="octicon octicon-link"></span></a>Automagic links</h3>
+
+<p>Set the location of your resources once and get free links everywhere.</p>
+
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">CommentPresenter</span>
+  <span class="n">location</span> <span class="ss">:@post</span><span class="p">,</span> <span class="ss">:@comment</span>
+<span class="k">end</span>
+
+<span class="n">comment_presenter</span><span class="o">.</span><span class="n">link_to_self</span> <span class="c1"># =&gt; "&lt;a href="/posts/32/comments/21"&gt;Comment Name&lt;/a&gt;"</span>
+</pre></div>
+
+<p>You can use it with namespaced resources or has_one relationships</p>
+
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">UserPresenter</span>
+  <span class="n">location</span> <span class="ss">:dashboard</span><span class="p">,</span> <span class="ss">:@contact</span><span class="p">,</span> <span class="ss">:user</span>
+<span class="k">end</span>
+
+<span class="n">user_presenter</span><span class="o">.</span><span class="n">link_to_self</span>
+
+<span class="c1"># =&gt; "&lt;a href="dashboard/contacts/12/user"&gt;User Name&lt;/a&gt;"</span>
+</pre></div>
+
+<p>By default RailsPresenter will call #to_s to get the text to be used inside the anchor, but you can pass a custom value too:</p>
+
+<div class="highlight"><pre><span class="n">user_presenter</span><span class="o">.</span><span class="n">link_to_self</span> <span class="ss">text</span><span class="p">:</span> <span class="s1">'This is user Foo'</span>
+
+<span class="c1"># =&gt; "&lt;a href="dashboard/contacts/12/user"&gt;This is user Foo&lt;/a&gt;"</span>
+</pre></div>
+
+<p>To get the parent resources RailsPresenter will try to get an instance variable with the same name as the parent, and if can't find any it will try to get it from an accessor method in the presenter object. In the example above it would try first to get a <code>@contact</code> instance variable and if can't find it, it will call <code>user_presenter.contact</code>.</p>
+
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p><strong>MIT License</strong>. <em>Copyright 2013 Diego Mónaco</em></p>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/dfmonaco">dfmonaco</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
