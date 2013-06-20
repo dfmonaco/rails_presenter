@@ -330,23 +330,27 @@ So if you have the right method defined, you can just drop your object in a view
 
 <p>You can use it with namespaced resources or has_one relationships</p>
 
-<div class="highlight"><pre><span class="k">class</span> <span class="nc">UserPresenter</span>
-  <span class="n">location</span> <span class="ss">:dashboard</span><span class="p">,</span> <span class="ss">:@contact</span><span class="p">,</span> <span class="ss">:user</span>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">ProfilePresenter</span>
+  <span class="n">location</span> <span class="ss">:dashboard</span><span class="p">,</span> <span class="ss">:@user</span><span class="p">,</span> <span class="ss">:profile</span>
+
+  <span class="k">def</span> <span class="nf">name</span>
+    <span class="s2">"</span><span class="si">#{</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">'s Profile"</span>
+  <span class="k">end</span>
 <span class="k">end</span>
 
-<span class="n">user_presenter</span><span class="o">.</span><span class="n">link_to_self</span>
+<span class="n">profile_presenter</span><span class="o">.</span><span class="n">link_to_self</span>
 
-<span class="c1"># =&gt; "&lt;a href="dashboard/contacts/12/user"&gt;User Name&lt;/a&gt;"</span>
+<span class="c1"># =&gt; "&lt;a href="dashboard/users/12/profile"&gt;John Doe's Profile&lt;/a&gt;"</span>
 </pre></div>
 
-<p>By default RailsPresenter will call #to_s to get the text to be used inside the anchor, but you can pass a custom value too:</p>
+<p>By default RailsPresenter will call <code>#to_s</code> to get the text to be used inside the anchor, but you can pass a custom value too:</p>
 
-<div class="highlight"><pre><span class="n">user_presenter</span><span class="o">.</span><span class="n">link_to_self</span> <span class="ss">text</span><span class="p">:</span> <span class="s1">'This is user Foo'</span>
+<div class="highlight"><pre><span class="n">profile_presenter</span><span class="o">.</span><span class="n">link_to_self</span> <span class="ss">text</span><span class="p">:</span> <span class="s1">'View your Profile'</span>
 
-<span class="c1"># =&gt; "&lt;a href="dashboard/contacts/12/user"&gt;This is user Foo&lt;/a&gt;"</span>
+<span class="c1"># =&gt; "&lt;a href="dashboard/users/12/profile"&gt;View your Profile&lt;/a&gt;"</span>
 </pre></div>
 
-<p>To get the parent resources RailsPresenter will try to get an instance variable with the same name as the parent, and if can't find any it will try to get it from an accessor method in the presenter object. In the example above it would try first to get a <code>@contact</code> instance variable and if can't find it, it will call <code>user_presenter.contact</code>.</p>
+<p>To get the parent resources RailsPresenter will try to get an instance variable with the same name as the parent, and if can't find any it will try to get it from an accessor method in the target object. In the example above it would try first to get a <code>@user</code> instance variable and if can't find it, it will call <code>profile_presenter.target.user</code>.</p>
 
 <h2>
 <a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
