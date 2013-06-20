@@ -287,24 +287,28 @@ comment_presenter.link_to_self # => "<a href="/posts/32/comments/21">Comment Nam
 You can use it with namespaced resources or has_one relationships
 
 ```ruby
-class UserPresenter
-  location :dashboard, :@contact, :user
+class ProfilePresenter
+  location :dashboard, :@user, :profile
+
+  def name
+    "#{user.name}'s Profile"
+  end
 end
 
-user_presenter.link_to_self
+profile_presenter.link_to_self
 
-# => "<a href="dashboard/contacts/12/user">User Name</a>"
+# => "<a href="dashboard/users/12/profile">John Doe's Profile</a>"
 ```
 
-By default RailsPresenter will call #to_s to get the text to be used inside the anchor, but you can pass a custom value too:
+By default RailsPresenter will call `#to_s` to get the text to be used inside the anchor, but you can pass a custom value too:
 
 ```ruby
-user_presenter.link_to_self text: 'This is user Foo'
+profile_presenter.link_to_self text: 'View your Profile'
 
-# => "<a href="dashboard/contacts/12/user">This is user Foo</a>"
+# => "<a href="dashboard/users/12/profile">View your Profile</a>"
 ```
 
-To get the parent resources RailsPresenter will try to get an instance variable with the same name as the parent, and if can't find any it will try to get it from an accessor method in the presenter object. In the example above it would try first to get a `@contact` instance variable and if can't find it, it will call `user_presenter.contact`.
+To get the parent resources RailsPresenter will try to get an instance variable with the same name as the parent, and if can't find any it will try to get it from an accessor method in the target object. In the example above it would try first to get a `@user` instance variable and if can't find it, it will call `profile_presenter.target.user`.
 
 ## License
 
