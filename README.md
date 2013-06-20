@@ -310,6 +310,32 @@ profile_presenter.link_to_self text: 'View your Profile'
 
 To get the parent resources RailsPresenter will try to get an instance variable with the same name as the parent, and if can't find any it will try to get it from an accessor method in the target object. In the example above it would try first to get a `@user` instance variable and if can't find it, it will call `profile_presenter.target.user`.
 
+## Compatibility
+
+For any given version, check `.travis.yml` to see what Ruby versions are being tested for compatibility.
+
+## Installation
+
+Add this line to your application's Gemfile:
+
+    gem 'rails_presenter'
+
+And then execute:
+
+    $ bundle
+
+Or install it yourself as:
+
+    $ gem install rails_presenter
+
+## Contributing
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
+
 ## License
 
 __MIT License__. *Copyright 2013 Diego Mónaco*
