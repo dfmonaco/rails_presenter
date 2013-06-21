@@ -220,7 +220,7 @@
 
 <p>This method determines the name of the presenter class from the target object, for example a Project object would instantiate a ProjectPresenter object. If the assumed presenter class doesn't exist it will return the unmodified target object.</p>
 
-<p>You can pass an optional block too:</p>
+<p>You can pass an optional block too, in fact this the intended usage of the helper in your views:</p>
 
 <div class="highlight"><pre><span class="n">present</span><span class="p">(</span><span class="vi">@purchase_order</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">purchase_order_presenter</span><span class="o">|</span>
   <span class="n">purchase_order_presenter</span><span class="o">.</span><span class="n">date</span>
@@ -351,6 +351,28 @@ So if you have the right method defined, you can just drop your object in a view
 </pre></div>
 
 <p>To get the parent resources RailsPresenter will try to get an instance variable with the same name as the parent, and if can't find any it will try to get it from an accessor method in the target object. In the example above it would try first to get a <code>@user</code> instance variable and if can't find it, it will call <code>profile_presenter.target.user</code>.</p>
+
+<h3>
+<a name="use-super-at-will" class="anchor" href="#use-super-at-will"><span class="octicon octicon-link"></span></a>Use <code>super</code> at will</h3>
+
+<p>You can very easily add functionality on top of what RailsPresenter already provides, you just have to redefine your method and call <code>super</code>, class inheritance, module mixin, everything works as expected, as RailsPresenter uses a set of well identified (not anonymous) modules to extend functionality.</p>
+
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">SupplierPresenter</span> <span class="o">&lt;</span> <span class="no">CompanyPresenter</span><span class="p">;</span> <span class="k">end</span>
+<span class="k">class</span> <span class="nc">CompanyPresenter</span> <span class="o">&lt;</span> <span class="ss">RailsPresenter</span><span class="p">:</span><span class="ss">:Base</span><span class="p">;</span> <span class="k">end</span>
+
+<span class="no">SupplierPresenter</span><span class="o">.</span><span class="n">ancestors</span>
+
+<span class="c1"># =&gt;</span>
+
+<span class="c1">#      [SupplierPresenter,</span>
+<span class="c1">#       SupplierPresenter::NumberToCurrency,</span>
+<span class="c1">#       SupplierPresenter::SupplierPresenterAssociations,</span>
+<span class="c1">#       SupplierPresenter::BlankAttributes,</span>
+<span class="c1">#       CompanyPresenter,</span>
+<span class="c1">#       CompanyPresenter::BlankAttributes,</span>
+<span class="c1">#       RailsPresenter::Base,</span>
+<span class="c1">#       etc, etc...]</span>
+</pre></div>
 
 <h2>
 <a name="are-you-crazy-we-already-have-draper" class="anchor" href="#are-you-crazy-we-already-have-draper"><span class="octicon octicon-link"></span></a>Are you crazy? We already have Draper!!</h2>
