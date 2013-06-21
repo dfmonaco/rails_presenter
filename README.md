@@ -339,14 +339,14 @@ present(Article.first)
 # Draper way
 
 ArticleDecorator.decorate_collection(Article.all)
-Article.popular.decorate # => this only works for an ActiveRecord relation
-[Article.first, Comment.last, User.find(3)].decorate # => you can't do this
+Article.popular.decorate # this only works for an ActiveRecord relation
+[Article.first, Comment.last, User.find(3)].decorate # you can't do this
 
 # RailsPresenter way
 
 present(Article.all)
 present(Article.popular)
-present([Article.first, Comment.last, User.find(3)]) # => you can decorate arbitrary arrays
+present([Article.first, Comment.last, User.find(3)]) # you can decorate arbitrary arrays
 ```
 #### Decorating associations
 
