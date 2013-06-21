@@ -176,7 +176,7 @@ present(Product.limit(2).order(:name))).map(&:class) # => [ProductPresenter, Pro
 ```
 This method determines the name of the presenter class from the target object, for example a Project object would instantiate a ProjectPresenter object. If the assumed presenter class doesn't exist it will return the unmodified target object.
 
-You can pass an optional block too:
+You can pass an optional block too, in fact this the intended usage of the helper in your views:
 
 ```ruby
 present(@purchase_order) do |purchase_order_presenter|
@@ -309,6 +309,29 @@ profile_presenter.link_to_self text: 'View your Profile'
 ```
 
 To get the parent resources RailsPresenter will try to get an instance variable with the same name as the parent, and if can't find any it will try to get it from an accessor method in the target object. In the example above it would try first to get a `@user` instance variable and if can't find it, it will call `profile_presenter.target.user`.
+
+### Use `super` at will
+
+You can very easily add functionality on top of what RailsPresenter already provides, you just have to redefine your method and call `super`, class inheritance, module mixin, everything works as expected, as RailsPresenter uses a set of well identified (not anonymous) modules to extend functionality.
+
+```ruby
+class SupplierPresenter < CompanyPresenter; end
+class CompanyPresenter < RailsPresenter::Base; end
+
+SupplierPresenter.ancestors
+
+# =>
+
+#      [SupplierPresenter,
+#       SupplierPresenter::NumberToCurrency,
+#       SupplierPresenter::SupplierPresenterAssociations,
+#       SupplierPresenter::BlankAttributes,
+#       CompanyPresenter,
+#       CompanyPresenter::BlankAttributes,
+#       RailsPresenter::Base,
+#       etc, etc...]
+```
+
 
 ## Are you crazy? We already have Draper!!
 
