@@ -384,14 +384,14 @@ So if you have the right method defined, you can just drop your object in a view
 <div class="highlight"><pre><span class="c1"># Draper way</span>
 
 <span class="no">ArticleDecorator</span><span class="o">.</span><span class="n">decorate_collection</span><span class="p">(</span><span class="no">Article</span><span class="o">.</span><span class="n">all</span><span class="p">)</span>
-<span class="no">Article</span><span class="o">.</span><span class="n">popular</span><span class="o">.</span><span class="n">decorate</span> <span class="c1"># =&gt; this only works for an ActiveRecord relation</span>
-<span class="o">[</span><span class="no">Article</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="no">Comment</span><span class="o">.</span><span class="n">last</span><span class="p">,</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">].</span><span class="n">decorate</span> <span class="c1"># =&gt; you can't do this</span>
+<span class="no">Article</span><span class="o">.</span><span class="n">popular</span><span class="o">.</span><span class="n">decorate</span> <span class="c1"># this only works for an ActiveRecord relation</span>
+<span class="o">[</span><span class="no">Article</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="no">Comment</span><span class="o">.</span><span class="n">last</span><span class="p">,</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">].</span><span class="n">decorate</span> <span class="c1"># you can't do this</span>
 
 <span class="c1"># RailsPresenter way</span>
 
 <span class="n">present</span><span class="p">(</span><span class="no">Article</span><span class="o">.</span><span class="n">all</span><span class="p">)</span>
 <span class="n">present</span><span class="p">(</span><span class="no">Article</span><span class="o">.</span><span class="n">popular</span><span class="p">)</span>
-<span class="n">present</span><span class="p">(</span><span class="o">[</span><span class="no">Article</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="no">Comment</span><span class="o">.</span><span class="n">last</span><span class="p">,</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">]</span><span class="p">)</span> <span class="c1"># =&gt; you can decorate arbitrary arrays</span>
+<span class="n">present</span><span class="p">(</span><span class="o">[</span><span class="no">Article</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="no">Comment</span><span class="o">.</span><span class="n">last</span><span class="p">,</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">]</span><span class="p">)</span> <span class="c1"># you can decorate arbitrary arrays</span>
 </pre></div>
 
 <h4>
