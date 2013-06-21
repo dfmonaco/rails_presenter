@@ -310,6 +310,70 @@ profile_presenter.link_to_self text: 'View your Profile'
 
 To get the parent resources RailsPresenter will try to get an instance variable with the same name as the parent, and if can't find any it will try to get it from an accessor method in the target object. In the example above it would try first to get a `@user` instance variable and if can't find it, it will call `profile_presenter.target.user`.
 
+## Are you crazy? We already have Draper!!
+
+Well yes, Draper it's an amazing library and it inspired RailsPresenter in many ways (and was developed by people way more smarter than me), so I will try to illustrate what motivated me to reinvent the wheel.
+
+At a basic level both provide the same functionality, but for my personal needs I find Draper too complex and with too many options, I prefer a simpler interface and good conventions, besides RailsPresenter implements a set of presentation related functionality on top of basic delegation as you can see on the aforementioned features. Additionally RailsPresenter it's meant to be used only inside the views, through the `#present` helper, so it doesn't provides any controller related functionality.
+
+On the other side Draper has a much more fine-grained control over the methods delegated to the target object, RailsPresenter just will delegate every method called not defined in the presenter.
+
+### Examples:
+
+#### Decorating a single object
+
+```ruby
+# Draper way
+
+Article.first.decorate
+ArticleDecorator.new(Article.first)
+ArticleDecorator.decorate(Article.first)
+
+# RailsPresenter way
+
+present(Article.first)
+```
+#### Decorating a collection
+
+```ruby
+# Draper way
+
+ArticleDecorator.decorate_collection(Article.all)
+Article.popular.decorate # => this only works for an ActiveRecord relation
+[Article.first, Comment.last, User.find(3)].decorate # => you can't do this
+
+# RailsPresenter way
+
+present(Article.all)
+present(Article.popular)
+present([Article.first, Comment.last, User.find(3)]) # => you can decorate arbitrary arrays
+```
+#### Decorating associations
+
+```ruby
+# Draper way
+
+class Article < ActiveRecord::Base
+  # I think the following scope it's completely view related and doesn't belongs here
+  def self.comments_with_author_included_and_ordered_by_created_at
+    comments.includes(:author).order('comments.created_at')
+  end
+end
+
+class ArticleDecorator < Draper::Decorator
+  decorates_association :comments, scope: :comments_with_author_included_and_ordered_by_created_at
+end
+
+# RailsPresenter way
+
+class ArticlePresenter < RailsPresenter::Base
+  present :comments do
+    includes(:author).order('comments.created_at')
+  end
+end
+```
+
+
 ## Compatibility
 
 For any given version, check `.travis.yml` to see what Ruby versions are being tested for compatibility.
