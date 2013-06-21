@@ -353,6 +353,73 @@ So if you have the right method defined, you can just drop your object in a view
 <p>To get the parent resources RailsPresenter will try to get an instance variable with the same name as the parent, and if can't find any it will try to get it from an accessor method in the target object. In the example above it would try first to get a <code>@user</code> instance variable and if can't find it, it will call <code>profile_presenter.target.user</code>.</p>
 
 <h2>
+<a name="are-you-crazy-we-already-have-draper" class="anchor" href="#are-you-crazy-we-already-have-draper"><span class="octicon octicon-link"></span></a>Are you crazy? We already have Draper!!</h2>
+
+<p>Well yes, Draper it's an amazing library and it inspired RailsPresenter in many ways (and was developed by people way more smarter than me), so I will try to illustrate what motivated me to reinvent the wheel.</p>
+
+<p>At a basic level both provide the same functionality, but for my personal needs I find Draper too complex and with too many options, I prefer a simpler interface and good conventions, besides RailsPresenter implements a set of presentation related functionality on top of basic delegation as you can see on the aforementioned features. Additionally RailsPresenter it's meant to be used only inside the views, through the <code>#present</code> helper, so it doesn't provides any controller related functionality.</p>
+
+<p>On the other side Draper has a much more fine-grained control over the methods delegated to the target object, RailsPresenter just will delegate every method called not defined in the presenter.</p>
+
+<h3>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples:</h3>
+
+<h4>
+<a name="decorating-a-single-object" class="anchor" href="#decorating-a-single-object"><span class="octicon octicon-link"></span></a>Decorating a single object</h4>
+
+<div class="highlight"><pre><span class="c1"># Draper way</span>
+
+<span class="no">Article</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">decorate</span>
+<span class="no">ArticleDecorator</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">Article</span><span class="o">.</span><span class="n">first</span><span class="p">)</span>
+<span class="no">ArticleDecorator</span><span class="o">.</span><span class="n">decorate</span><span class="p">(</span><span class="no">Article</span><span class="o">.</span><span class="n">first</span><span class="p">)</span>
+
+<span class="c1"># RailsPresenter way</span>
+
+<span class="n">present</span><span class="p">(</span><span class="no">Article</span><span class="o">.</span><span class="n">first</span><span class="p">)</span>
+</pre></div>
+
+<h4>
+<a name="decorating-a-collection" class="anchor" href="#decorating-a-collection"><span class="octicon octicon-link"></span></a>Decorating a collection</h4>
+
+<div class="highlight"><pre><span class="c1"># Draper way</span>
+
+<span class="no">ArticleDecorator</span><span class="o">.</span><span class="n">decorate_collection</span><span class="p">(</span><span class="no">Article</span><span class="o">.</span><span class="n">all</span><span class="p">)</span>
+<span class="no">Article</span><span class="o">.</span><span class="n">popular</span><span class="o">.</span><span class="n">decorate</span> <span class="c1"># =&gt; this only works for an ActiveRecord relation</span>
+<span class="o">[</span><span class="no">Article</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="no">Comment</span><span class="o">.</span><span class="n">last</span><span class="p">,</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">].</span><span class="n">decorate</span> <span class="c1"># =&gt; you can't do this</span>
+
+<span class="c1"># RailsPresenter way</span>
+
+<span class="n">present</span><span class="p">(</span><span class="no">Article</span><span class="o">.</span><span class="n">all</span><span class="p">)</span>
+<span class="n">present</span><span class="p">(</span><span class="no">Article</span><span class="o">.</span><span class="n">popular</span><span class="p">)</span>
+<span class="n">present</span><span class="p">(</span><span class="o">[</span><span class="no">Article</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="no">Comment</span><span class="o">.</span><span class="n">last</span><span class="p">,</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">]</span><span class="p">)</span> <span class="c1"># =&gt; you can decorate arbitrary arrays</span>
+</pre></div>
+
+<h4>
+<a name="decorating-associations" class="anchor" href="#decorating-associations"><span class="octicon octicon-link"></span></a>Decorating associations</h4>
+
+<div class="highlight"><pre><span class="c1"># Draper way</span>
+
+<span class="k">class</span> <span class="nc">Article</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="c1"># I think the following scope it's completely view related and doesn't belongs here</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">comments_with_author_included_and_ordered_by_created_at</span>
+    <span class="n">comments</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="ss">:author</span><span class="p">)</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="s1">'comments.created_at'</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">ArticleDecorator</span> <span class="o">&lt;</span> <span class="ss">Draper</span><span class="p">:</span><span class="ss">:Decorator</span>
+  <span class="n">decorates_association</span> <span class="ss">:comments</span><span class="p">,</span> <span class="ss">scope</span><span class="p">:</span> <span class="ss">:comments_with_author_included_and_ordered_by_created_at</span>
+<span class="k">end</span>
+
+<span class="c1"># RailsPresenter way</span>
+
+<span class="k">class</span> <span class="nc">ArticlePresenter</span> <span class="o">&lt;</span> <span class="ss">RailsPresenter</span><span class="p">:</span><span class="ss">:Base</span>
+  <span class="n">present</span> <span class="ss">:comments</span> <span class="k">do</span>
+    <span class="n">includes</span><span class="p">(</span><span class="ss">:author</span><span class="p">)</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="s1">'comments.created_at'</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<h2>
 <a name="compatibility" class="anchor" href="#compatibility"><span class="octicon octicon-link"></span></a>Compatibility</h2>
 
 <p>For any given version, check <code>.travis.yml</code> to see what Ruby versions are being tested for compatibility.</p>
@@ -391,7 +458,7 @@ So if you have the right method defined, you can just drop your object in a view
       </section>
       <footer>
         <p>Project maintained by <a href="https://github.com/dfmonaco">dfmonaco</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
       </footer>
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
