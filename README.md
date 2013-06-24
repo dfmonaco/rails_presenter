@@ -396,6 +396,11 @@ class ArticlePresenter < RailsPresenter::Base
 end
 ```
 
+## Inspiration
+
+* Railscast: http://railscasts.com/episodes/287-presenters-from-scratch
+* Book: http://pragprog.com/book/warv/the-rails-view
+* Gem: https://github.com/drapergem/draper
 
 ## Compatibility
 
