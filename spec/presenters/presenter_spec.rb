@@ -12,7 +12,6 @@ class Project < ActiveRecord::Base
       create_column('something_id')]
   end
   attr_accessor :company
-  attr_accessible :id, :name, :project_manager, :company
 
   def persisted?
     true
@@ -30,7 +29,6 @@ class Company < ActiveRecord::Base
       create_column('updated_at'),
       create_column('something_id')]
   end
-  attr_accessible :id, :name
 end
 
 class Contract < ActiveRecord::Base
@@ -45,7 +43,6 @@ class Contract < ActiveRecord::Base
       create_column('something_id')]
   end
   attr_accessor :project
-  attr_accessible :id, :project
 
   def persisted?
     true
@@ -64,7 +61,6 @@ class User < ActiveRecord::Base
       create_column('something_id')]
   end
   attr_accessor :project
-  attr_accessible :id, :project
 
   def persisted?
     true
@@ -105,9 +101,9 @@ describe RailsPresenter::Base do
 
     specify { DummyRecordPresenter::BlankAttributes.instance_methods.should == [:bar, :baz, :qux] }
 
-    specify { child_class.new(DummyRecord.new, stub).bar.should == '----' }
+    specify { child_class.new(DummyRecord.new, double).bar.should == '----' }
 
-    specify { child_class.new(DummyRecord.new, stub).foo.should be_nil }
+    specify { child_class.new(DummyRecord.new, double).foo.should be_nil }
   end
 
   context 'presented object is not an active record' do
