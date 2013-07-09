@@ -65,4 +65,20 @@ describe RailsPresenter::PresenterHelper do
 
     specify { presented_collection.all? {|p| p.is_a?(FooPresenter)}.should be_true }
   end
+
+  context 'used for a relation' do
+    class Foo; end
+    class FooPresenter < RailsPresenter::Base; end
+
+    let(:relation) { [Foo.new, Foo.new, Foo.new] }
+    let(:presented_relation) { helper.present(relation) }
+
+    before do
+      relation.stub(:class) { ActiveRecord::Relation::ActiveRecord_Relation_Foo }
+    end
+
+    specify { presented_relation.all? {|p| p.is_a?(FooPresenter)}.should be_true }
+  end
+
+
 end
