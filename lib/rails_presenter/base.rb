@@ -71,14 +71,16 @@ module RailsPresenter
         end
       end
 
-      def inherited(child_class)
-        child_class.instance_eval do
-          format_blank_attributes(*possible_blank_attributes) if based_on_active_record?
-        end
-      end
-
       def format_blank_attributes(*attrs)
-        attr_module = Module.new do
+        module_name = 'BlankAttributes'
+
+        unless const_defined? module_name
+          include const_set(module_name, Module.new)
+        end
+
+        blank_attributes_module = const_get(module_name)
+
+        blank_attributes_module.module_eval do
           attrs.each do |attr|
             define_method(attr) do
               return nil_formatter if super().blank?
@@ -86,26 +88,12 @@ module RailsPresenter
             end
           end
         end
-
-        include const_set("BlankAttributes", attr_module)
       end
 
       private
 
       def base_class
         @base_class ||= to_s.chomp('Presenter').constantize
-      end
-
-      def based_on_active_record?
-        base_class.ancestors.include?(ActiveRecord::Base)
-      end
-
-      def possible_blank_attributes
-        base_class.column_names.reject do |attr|
-          ['id', 'created_at', 'updated_at'].include?(attr) ||
-          /_id\z/.match(attr) ||
-          base_class.validators_on(attr).any? {|v| !(v.options[:allow_nil] || v.options[:allow_blank])}
-        end
       end
     end
 

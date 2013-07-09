@@ -93,6 +93,7 @@ describe RailsPresenter::Base do
 
     let!(:child_class) do
       class DummyRecordPresenter < RailsPresenter::Base
+        format_blank_attributes :bar, :baz, :qux
         self
       end
     end
