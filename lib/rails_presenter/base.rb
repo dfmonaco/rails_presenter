@@ -8,18 +8,36 @@ module RailsPresenter
 
     class << self
       def location(*args)
-        define_method(:self_location, ->(location=nil) do
-          location ||= args.map do |p|
-            p = p.to_s
-            if p.delete! "@"
-              public_send("get_#{p}")
+        self_path = args.map(&:to_s)
+        new_path = ['new'] + self_path.dup.tap {|a| a[-1] = a[-1].delete "@"}
+        edit_path = ['edit'] + self_path.dup
+        collection_path = self_path.dup.tap {|a| a[-1] = a[-1].delete("@").pluralize }
+
+        define_method :polymorphic_path_array do |path|
+          path.map do |element|
+            if element.start_with? '@'
+              public_send("get_#{element.delete '@'}")
             else
-              p
+              element
             end
           end
+        end
 
-          super(location)
-        end)
+        define_method :self_location do
+          h.polymorphic_path polymorphic_path_array(self_path)
+        end
+
+        define_method :new_location do
+          h.polymorphic_path polymorphic_path_array(new_path)
+        end
+
+        define_method :edit_location do
+          h.polymorphic_path polymorphic_path_array(edit_path)
+        end
+
+        define_method :collection_location do
+          h.polymorphic_path polymorphic_path_array(collection_path)
+        end
       end
 
       def present(*args, &block)
@@ -90,11 +108,6 @@ module RailsPresenter
         end
       end
 
-      private
-
-      def base_class
-        @base_class ||= to_s.chomp('Presenter').constantize
-      end
     end
 
     def initialize(base_object, template)
@@ -133,14 +146,28 @@ module RailsPresenter
       h.render partial: 'shared/show_with_attrs', locals: {attrs_hash: attrs_hash}
     end
 
-    def self_location(location = target)
-      h.polymorphic_path location
+    def link_to_self(text = self.to_s)
+      h.link_to text, self_location
     end
 
-    def link_to_self(options={})
-      text = options[:text] || self.to_s
-      path = options[:path] || self_location
-      h.link_to text, path
+    def link_to_new(text = nil)
+      text ||= "New #{target.class.to_s}"
+      h.link_to text, new_location
+    end
+
+    def link_to_edit(text = nil)
+      text ||= "Edit #{target.class.to_s}"
+      h.link_to text, edit_location
+    end
+
+    def link_to_destroy(text = nil)
+      text ||= "Destroy #{target.class.to_s}"
+      h.link_to text, self_location, method: :delete, data: {confirm: 'Are you sure?'}
+    end
+
+    def link_to_collection(text = nil)
+      text ||= "View #{target.class.to_s.pluralize}"
+      h.link_to text, collection_location
     end
 
     def nil_formatter

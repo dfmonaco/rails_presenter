@@ -29,6 +29,10 @@ class Company < ActiveRecord::Base
       create_column('updated_at'),
       create_column('something_id')]
   end
+
+  def persisted?
+    true
+  end
 end
 
 class Contract < ActiveRecord::Base
@@ -182,15 +186,29 @@ describe RailsPresenter::Base do
   end
 
   describe '.location' do
+    class ProjectPresenter < RailsPresenter::Base
+      location :@project
+    end
+
+    let(:project) { Project.new(id:2) }
+    let(:project_presenter) { ProjectPresenter.new(project, view) }
+
+    specify { project_presenter.self_location.should eq('/projects/2') }
+    specify { project_presenter.new_location.should eq('/projects/new') }
+    specify { project_presenter.edit_location.should eq('/projects/2/edit') }
+    specify { project_presenter.collection_location.should eq('/projects') }
+
     class ContractPresenter < RailsPresenter::Base
       location :@project, :@contract
     end
 
-    let(:project) { Project.new(id:2) }
     let(:contract) { Contract.new(id:5, project: project) }
     let(:contract_presenter) { ContractPresenter.new(contract, view) }
 
     specify { contract_presenter.self_location.should eq('/projects/2/contracts/5') }
+    specify { contract_presenter.new_location.should eq('/projects/2/contracts/new') }
+    specify { contract_presenter.edit_location.should eq('/projects/2/contracts/5/edit') }
+    specify { contract_presenter.collection_location.should eq('/projects/2/contracts') }
 
     class UserPresenter < RailsPresenter::Base
       location :@project, :user
@@ -200,6 +218,8 @@ describe RailsPresenter::Base do
     let(:user_presenter) { UserPresenter.new(user, view) }
 
     specify { user_presenter.self_location.should eq('/projects/2/user') }
+    specify { user_presenter.new_location.should eq('/projects/2/user/new') }
+    specify { user_presenter.edit_location.should eq('/projects/2/user/edit') }
   end
 
 
@@ -239,9 +259,53 @@ describe RailsPresenter::Base do
     specify { FooPresenter.ancestors.should include(FooPresenter::NumberWithPrecision) }
   end
 
+  describe '#link_to_....' do
+    class CompanyPresenter < RailsPresenter::Base
+      location :@company
+    end
+
+    let(:company) { Company.new(id: 34, name: 'foo')}
+    let(:company_presenter) { CompanyPresenter.new(company, view)}
+
+    it 'renders a link to the company' do
+      link_to_self_html = Capybara.string(company_presenter.link_to_self).find('a')
+
+      link_to_self_html[:href].should == "/companies/34"
+      link_to_self_html.text.should == 'foo'
+    end
+
+    it 'renders a link to a new company' do
+      link_to_new_html = Capybara.string(company_presenter.link_to_new).find('a')
+
+      link_to_new_html[:href].should == "/companies/new"
+      link_to_new_html.text.should == 'New Company'
+    end
+
+    it 'renders a link to edit a company' do
+      link_to_new_html = Capybara.string(company_presenter.link_to_edit).find('a')
+
+      link_to_new_html[:href].should == "/companies/34/edit"
+      link_to_new_html.text.should == 'Edit Company'
+    end
+
+    it 'renders a link to the company collection' do
+      link_to_new_html = Capybara.string(company_presenter.link_to_collection).find('a')
+
+      link_to_new_html[:href].should == "/companies"
+      link_to_new_html.text.should == 'View Companies'
+    end
+
+    it 'renders a link to destroy a company' do
+      link_to_new_html = Capybara.string(company_presenter.link_to_destroy).find('a')
+
+      link_to_new_html[:href].should == "/companies/34"
+      link_to_new_html['data-method'].should == "delete"
+      link_to_new_html['data-confirm'].should == "Are you sure?"
+      link_to_new_html.text.should == 'Destroy Company'
+    end
+  end
 
   describe 'general presenters methods' do
-    class ProjectPresenter < RailsPresenter::Base; end
     let(:presenter) { ProjectPresenter.new(project, view) }
     let(:company) { Company.new(name: 'acme') }
     let(:project) { Project.new(id:58, name: 'foo', project_manager: 'bar', company: company) }
@@ -266,14 +330,6 @@ describe RailsPresenter::Base do
       end
     end
 
-    describe '#link_to_self' do
-      let(:html) { Capybara.string(presenter.link_to_self).find('a') }
-
-      it 'renders a link to the project' do
-        html[:href].should == "/projects/58"
-        html.text.should == 'foo'
-      end
-    end
 
     describe '#get_* and #h_* courtesy of method_missing' do
       class Foo; end
