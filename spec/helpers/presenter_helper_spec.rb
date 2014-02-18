@@ -81,16 +81,16 @@ describe RailsPresenter::PresenterHelper do
 
   end
 
-  describe 'present_collection' do
+  describe 'present a collection' do
     context 'used from a view' do
       it 'yields a new presenter object per presented object' do
-        helper.present_collection([Project.new, Project.new]) do |presenter|
+        helper.present([Project.new, Project.new]) do |presenter|
           presenter.should be_a ProjectPresenter
         end
       end
 
       it 'yields the correct amount of presenters' do
-        helper.present_collection([Project.new, Project.new]).count.should == 2
+        helper.present([Project.new, Project.new]).count.should == 2
       end
 
       it 'returns the original object when there is no presenter class' do
@@ -100,8 +100,8 @@ describe RailsPresenter::PresenterHelper do
         dummy2 = DummyClass.new
         dummy_collection = [dummy1, dummy2]
 
-        helper.present_collection(dummy_collection)[0].should == dummy1
-        helper.present_collection(dummy_collection)[1].should == dummy2
+        helper.present(dummy_collection)[0].should == dummy1
+        helper.present(dummy_collection)[1].should == dummy2
       end
 
       it 'returns the correct object' do
@@ -109,8 +109,8 @@ describe RailsPresenter::PresenterHelper do
         presentable = Project.new
         collection  = [dummy, presentable]
 
-        helper.present_collection(collection)[0].should == dummy
-        helper.present_collection(collection)[1].should be_a ProjectPresenter
+        helper.present(collection)[0].should == dummy
+        helper.present(collection)[1].should be_a ProjectPresenter
       end
     end
 
@@ -142,7 +142,7 @@ describe RailsPresenter::PresenterHelper do
                      ]
 
         output = []
-        helper.present_collection(collection) do |presenter|
+        helper.present(collection) do |presenter|
           output << presenter.foo
         end
 
