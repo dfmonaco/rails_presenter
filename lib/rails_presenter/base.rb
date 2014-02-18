@@ -115,8 +115,8 @@ module RailsPresenter
       super(base_object)
     end
 
-    def present(object)
-      super(object, h)
+    def present(object, custom_presenter=nil)
+      super(object, custom_presenter, h)
     end
 
     def h

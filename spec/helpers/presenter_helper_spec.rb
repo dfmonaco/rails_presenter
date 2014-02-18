@@ -136,9 +136,9 @@ describe RailsPresenter::PresenterHelper do
         non_presentable = NonPresentable.new
         collection = [
                       presentable,
-                       non_presentable,
-                       presentable,
-                       non_presentable
+                      non_presentable,
+                      presentable,
+                      non_presentable
                      ]
 
         output = []
@@ -148,6 +148,27 @@ describe RailsPresenter::PresenterHelper do
 
         output.should == ["$123,00", 123, "$123,00", 123]
       end
+    end
+  end
+
+  describe "custom presenter" do
+    class NonPresentable
+      def foo
+        123
+      end
+    end
+    class CustomPresenter < RailsPresenter::Base
+      def foo
+        h.number_to_currency(super)
+      end
+    end
+
+    it "returns a custom presenter" do
+      helper.present(NonPresentable.new, :custom).should be_a CustomPresenter
+    end
+
+    it "presents using the custom presenter" do
+      helper.present(NonPresentable.new, :custom).foo.should == "$123,00"
     end
 
   end

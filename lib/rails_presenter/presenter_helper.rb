@@ -1,6 +1,6 @@
 module RailsPresenter
   module PresenterHelper
-    def present(object, template = self, &block)
+    def present(object, custom_presenter = nil, template = self, &block)
       if object.is_a?(Array) || object.is_a?(ActiveRecord::Relation)
         if block
           return(present_collection(object, &block))
@@ -11,7 +11,12 @@ module RailsPresenter
       end
 
       begin
-        presenter_class = "#{object.class}Presenter".constantize
+        object_class = if custom_presenter && custom_presenter.is_a?(Symbol)
+                         custom_presenter.to_s.split("_").map(&:capitalize).join
+                       else
+                         object.class
+                       end
+        presenter_class = "#{object_class}Presenter".constantize
       rescue NameError
         return object
       end
