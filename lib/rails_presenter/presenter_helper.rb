@@ -18,22 +18,10 @@ module RailsPresenter
     end
 
     def present_collection(collection, template = self, &block)
-      if !collection.is_a?(Array) || !collection.is_a?(ActiveRecord::Relation) || !block_given?
-        return present(collection)
+      return present(collection) unless block
+      Array(collection).each do |object|
+        yield present(object)
       end
-
-      collection.each do |object|
-        begin
-          presenter_class = "#{object.class}Presenter".constantize
-        rescue NameError
-          block.call(object)
-        end
-
-        presenter = presenter_class.new(object, template)
-
-        block.call(presenter)
-      end
-
     end
   end
 

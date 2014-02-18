@@ -105,8 +105,6 @@ describe RailsPresenter::PresenterHelper do
       end
 
       it 'returns the correct object' do
-        class DummyClass; end
-
         dummy       = DummyClass.new
         presentable = Project.new
         collection  = [dummy, presentable]
@@ -115,6 +113,42 @@ describe RailsPresenter::PresenterHelper do
         helper.present_collection(collection)[1].should be_a ProjectPresenter
       end
     end
-  end
 
+    context "presenting properly" do
+      class Presentable
+        def foo
+          123
+        end
+      end
+      class PresentablePresenter < RailsPresenter::Base
+        def foo
+          h.number_to_currency(super)
+        end
+      end
+      class NonPresentable
+        def foo
+          123
+        end
+      end
+
+      it "presents each object properly" do
+        presentable     = Presentable.new
+        non_presentable = NonPresentable.new
+        collection = [
+                      presentable,
+                       non_presentable,
+                       presentable,
+                       non_presentable
+                     ]
+
+        output = []
+        helper.present_collection(collection) do |presenter|
+          output << presenter.foo
+        end
+
+        output.should == ["$123,00", 123, "$123,00", 123]
+      end
+    end
+
+  end
 end
