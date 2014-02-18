@@ -21,64 +21,100 @@ describe RailsPresenter::PresenterHelper do
         helper.present(dummy).should == dummy
       end
     end
-  end
 
-  context 'used from a presenter' do
-    it 'works when called from a presenter context' do
-      class Foo
-        def to_s
-          1234
+    context 'used from a presenter' do
+      it 'works when called from a presenter context' do
+        class Foo
+          def to_s
+            1234
+          end
         end
-      end
 
-      class FooPresenter < RailsPresenter::Base
-        def to_s
-          h.number_to_currency(super)
+        class FooPresenter < RailsPresenter::Base
+          def to_s
+            h.number_to_currency(super)
+          end
         end
-      end
 
-      class Bar
-        def foo
-          Foo.new
+        class Bar
+          def foo
+            Foo.new
+          end
         end
-      end
 
 
-      class BarPresenter < RailsPresenter::Base
-        def foo
-          present(super).to_s
+        class BarPresenter < RailsPresenter::Base
+          def foo
+            present(super).to_s
+          end
         end
+
+        presenter = BarPresenter.new(Bar.new, helper)
+
+        presenter.foo.should == '$1.234,00'
       end
-
-      presenter = BarPresenter.new(Bar.new, helper)
-
-      presenter.foo.should == '$1.234,00'
-    end
-  end
-
-  context 'used for a collection' do
-    class Foo; end
-    class FooPresenter < RailsPresenter::Base; end
-
-    let(:collection) { [Foo.new, Foo.new, Foo.new] }
-    let(:presented_collection) { helper.present(collection) }
-
-    specify { presented_collection.all? {|p| p.is_a?(FooPresenter)}.should be_true }
-  end
-
-  context 'used for a relation' do
-    class Foo; end
-    class FooPresenter < RailsPresenter::Base; end
-
-    let(:relation) { [Foo.new, Foo.new, Foo.new] }
-    let(:presented_relation) { helper.present(relation) }
-
-    before do
-      relation.stub(:class) { ActiveRecord::Relation::ActiveRecord_Relation_Foo }
     end
 
-    specify { presented_relation.all? {|p| p.is_a?(FooPresenter)}.should be_true }
+    context 'used for a collection' do
+      class Foo; end
+      class FooPresenter < RailsPresenter::Base; end
+
+      let(:collection) { [Foo.new, Foo.new, Foo.new] }
+      let(:presented_collection) { helper.present(collection) }
+
+      specify { presented_collection.all? {|p| p.is_a?(FooPresenter)}.should be_true }
+    end
+
+    context 'used for a relation' do
+      class Foo; end
+      class FooPresenter < RailsPresenter::Base; end
+
+      let(:relation) { [Foo.new, Foo.new, Foo.new] }
+      let(:presented_relation) { helper.present(relation) }
+
+      before do
+        relation.stub(:class) { ActiveRecord::Relation::ActiveRecord_Relation_Foo }
+      end
+
+      specify { presented_relation.all? {|p| p.is_a?(FooPresenter)}.should be_true }
+    end
+
   end
 
+  describe 'present_collection' do
+    context 'used from a view' do
+      it 'yields a new presenter object per presented object' do
+        helper.present_collection([Project.new, Project.new]) do |presenter|
+          presenter.should be_a ProjectPresenter
+        end
+      end
+
+      it 'yields the correct amount of presenters' do
+        helper.present_collection([Project.new, Project.new]).count.should == 2
+      end
+
+      it 'returns the original object when there is no presenter class' do
+        class DummyClass; end
+
+        dummy1 = DummyClass.new
+        dummy2 = DummyClass.new
+        dummy_collection = [dummy1, dummy2]
+
+        helper.present_collection(dummy_collection)[0].should == dummy1
+        helper.present_collection(dummy_collection)[1].should == dummy2
+      end
+
+      it 'returns the correct object' do
+        class DummyClass; end
+
+        dummy       = DummyClass.new
+        presentable = Project.new
+        collection  = [dummy, presentable]
+
+        helper.present_collection(collection)[0].should == dummy
+        helper.present_collection(collection)[1].should be_a ProjectPresenter
+      end
+    end
+  end
 
 end
