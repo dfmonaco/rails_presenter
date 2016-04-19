@@ -1,0 +1,3 @@
+module RailsPresenter
+  # Your code goes here...
+end
