@@ -40,8 +40,8 @@ module RailsPresenter
       super(base_object)
     end
 
-    def present(object)
-      super(object, h, opts)
+    def present(object, opts = {})
+      super(object, @template, opts)
     end
 
     def h
