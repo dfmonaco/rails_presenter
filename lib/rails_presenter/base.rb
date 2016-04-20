@@ -6,7 +6,8 @@ module RailsPresenter
 
     class << self
 
-      def present(*args, &block)
+      def present(assoc_name, opts = {}, &block)
+
         module_name = "#{name}Associations"
 
         unless const_defined? module_name
@@ -18,17 +19,15 @@ module RailsPresenter
         block ||= proc { self }
 
         associations_module.module_eval do
-          args.each do |assoc_name|
-            define_method(assoc_name) do
-              instance_variable_get("@#{assoc_name}") ||
-              begin
-                association = if super().is_a?(Array) && super().respond_to?(:scoped)
-                  super().scoped
-                else
-                  super()
-                end
-                instance_variable_set("@#{assoc_name}", present(association.instance_eval(&block)))
+          define_method(assoc_name) do
+            instance_variable_get("@#{assoc_name}") ||
+            begin
+              association = if super().is_a?(Array) && super().respond_to?(:scoped)
+                super().scoped
+              else
+                super()
               end
+              instance_variable_set("@#{assoc_name}", present(association.instance_eval(&block), opts))
             end
           end
         end
@@ -42,7 +41,7 @@ module RailsPresenter
     end
 
     def present(object)
-      super(object, h)
+      super(object, h, opts)
     end
 
     def h
