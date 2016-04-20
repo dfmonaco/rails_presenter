@@ -6,7 +6,7 @@ module RailsPresenter
       end
 
       begin
-        presenter_class = opts.fetch(:with, "#{object.class}Presenter".constantize)
+        presenter_class = opts[:with] || "#{object.class}Presenter".constantize
       rescue NameError
         return object
       end
