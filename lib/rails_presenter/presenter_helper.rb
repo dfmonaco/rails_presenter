@@ -1,12 +1,12 @@
 module RailsPresenter
   module PresenterHelper
-    def present(object, template = self, opts = {}, &block)
+    def present(template = self, object, with: nil, &block)
       if object.is_a?(Array) || object.is_a?(ActiveRecord::Relation)
         return object.map {|e| present(e)}
       end
 
       begin
-        presenter_class = opts[:with] || "#{object.class}Presenter".constantize
+        presenter_class = with || "#{object.class}Presenter".constantize
       rescue NameError
         return object
       end
