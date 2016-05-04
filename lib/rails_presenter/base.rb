@@ -9,6 +9,7 @@ module RailsPresenter
       def present(assoc_name, opts = {}, &block)
 
         module_name = "#{name}Associations"
+        module_name = "#{name.split('::').last}Associations"
 
         unless const_defined? module_name
           include const_set(module_name, Module.new)
