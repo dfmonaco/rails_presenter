@@ -2,7 +2,7 @@ module RailsPresenter
   module PresenterHelper
     def present(template = self, object, with: nil, &block)
       if object.is_a?(Array) || object.is_a?(ActiveRecord::Relation)
-        return object.map {|e| present(e)}
+        return object.map {|e| present(e, with: with)}
       end
 
       begin
