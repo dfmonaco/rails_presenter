@@ -8,10 +8,10 @@ module RailsPresenter
       begin
         presenter_class = with || "#{object.class}Presenter".constantize
       rescue NameError
-        return object
+        presenter = object
       end
 
-      presenter = presenter_class.new(object, template)
+      presenter ||= presenter_class.new(object, template)
 
       block.call(presenter) if block
       presenter
