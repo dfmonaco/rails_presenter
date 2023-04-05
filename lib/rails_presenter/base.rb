@@ -28,7 +28,7 @@ module RailsPresenter
               else
                 super()
               end
-              instance_variable_set("@#{assoc_name}", present(association.instance_eval(&block), opts))
+              instance_variable_set("@#{assoc_name}", present(association.instance_eval(&block), **opts))
             end
           end
         end
@@ -41,8 +41,8 @@ module RailsPresenter
       super(base_object)
     end
 
-    def present(object, opts = {})
-      super(@template, object, opts)
+    def present(object, **opts)
+      super(@template, object, **opts)
     end
 
     def h
